@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Student Face</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Register Face for Student</h2>
+        {% if request.args.get('success') %}
+            <p class="success">Face registered successfully for student {{ request.args.get('success') }}!</p>
+        {% endif %}
+        <form method="POST" action="{{ url_for('submit_face_registration') }}" enctype="multipart/form-data">
+            <label>Select Student:</label>
+            <select name="student_id" required>
+                {% for s in students %}
+                    <option value="{{ s.student_id }}">{{ s.name }} ({{ s.student_id }}) {% if s.has_face %}[Face already set]{% endif %}</option>
+                {% endfor %}
+            </select>
+            <label>Upload Face Image (clear frontal face):</label>
+            <input type="file" name="face_image" accept="image/*" required>
+            <button type="submit">Register</button>
+        </form>
+        <a href="{{ url_for('teacher_dashboard') }}">Back</a>
+    </div>
+</body>
+</html>

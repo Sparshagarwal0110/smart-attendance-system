@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Statistics - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📊</div>
+            <div class="logo-text">Statistics</div>
+        </div>
+        <div class="content">
+            <h2>Attendance Statistics</h2>
+            <form id="filterForm">
+                <label>Subject:</label>
+                <select id="subjectSelect">
+                    <option value="">-- All Subjects --</option>
+                    {% for subj in subjects %}
+                    <option value="{{ subj.id }}">{{ subj.subject_code }} - {{ subj.subject_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" onclick="loadStats()">Load Statistics</button>
+            </form>
+            <div style="margin-bottom: 20px;">
+                <canvas id="dailyChart" width="800" height="400"></canvas>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <canvas id="studentPieChart" width="800" height="400"></canvas>
+            </div>
+            <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+        </div>
+    </div>
+    <script>
+        function loadStats() {
+            const subjectId = document.getElementById('subjectSelect').value;
+            let url = '/admin/stats/data';
+            if (subjectId) {
+                url += '?subject_id=' + subjectId;
+            }
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    // Daily line chart
+                    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
+                    if (window.dailyChart) window.dailyChart.destroy();
+                    window.dailyChart = new Chart(dailyCtx, {
+                        type: 'line',
+                        data: {
+                            labels: data.daily.map(d => d.date),
+                            datasets: [{
+                                label: 'Number of Attendances',
+                                data: data.daily.map(d => d.count),
+                                borderColor: 'blue',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: { beginAtZero: true, title: { display: true, text: 'Attendance Count' } },
+                                x: { title: { display: true, text: 'Date' } }
+                            }
+                        }
+                    });
+                    // Student pie chart
+                    const studentData = data.student_percentages.slice(0, 10);
+                    const pieCtx = document.getElementById('studentPieChart').getContext('2d');
+                    if (window.pieChart) window.pieChart.destroy();
+                    window.pieChart = new Chart(pieCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: studentData.map(s => `${s.name} (${s.student_id})`),
+                            datasets: [{
+                                data: studentData.map(s => s.percentage),
+                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}%` } }
+                            }
+                        }
+                    });
+                });
+        }
+        // Load on page load
+        loadStats();
+    </script>
+</body>
+</html>

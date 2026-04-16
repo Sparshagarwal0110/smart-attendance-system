@@ -1,0 +1,43 @@
+# Database
+database/attendance.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Virtual environment
+myenv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Flask session files
+flask_session/
+
+# Dataset (captured face images – optional, can be large)
+dataset/
+
+# Environment variables
+.env
+.flaskenv
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

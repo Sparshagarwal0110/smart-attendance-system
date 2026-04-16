@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Students</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📚</div>
+            <div class="logo-text">Manage Students (Face Recognition Database)</div>
+        </div>
+        <div class="content">
+            <h2>Student Records</h2>
+            {% if request.args.get('msg') %}
+                <p class="success">{{ request.args.get('msg') }}</p>
+            {% endif %}
+            <table border="1">
+                <tr><th>Student ID</th><th>Name</th><th>Department</th><th>Enrollment Year</th><th>Face Registered?</th></tr>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.student_id }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.department }}</td>
+                    <td>{{ s.enrollment_year }}</td>
+                    <td>{% if s.has_face %}✅ Yes{% else %}❌ No{% endif %}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5">No student records found. Add one below.</td></tr>
+                {% endfor %}
+            </table>
+
+            <h3>Add New Student Record</h3>
+            <form method="POST" action="{{ url_for('admin_add_student_record') }}">
+                <input type="text" name="student_id" placeholder="Student ID (e.g., CS101)" required>
+                <input type="text" name="name" placeholder="Full Name" required>
+                <input type="text" name="department" placeholder="Department" required>
+                <input type="number" name="enrollment_year" placeholder="Year" required>
+                <button type="submit">Add Student</button>
+            </form>
+            <p><small>After adding, use Teacher Dashboard → Register Student Face to upload face image.</small></p>
+            <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,239 @@
+/* Modern Theme with Gradient Background & Card Design */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3a0ca3;
+    --secondary: #4cc9f0;
+    --success: #06d6a0;
+    --danger: #ef476f;
+    --warning: #ffb703;
+    --dark: #2b2d42;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container, .login-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    overflow: hidden;
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Header with Logo */
+.header {
+    background: var(--primary);
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 4px solid var(--secondary);
+}
+
+.logo {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--primary);
+}
+
+.logo img {
+    width: 100%;
+    height: auto;
+    border-radius: 50%;
+}
+
+.logo-text {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Content Area */
+.content {
+    padding: 30px;
+}
+
+h1, h2, h3 {
+    color: var(--dark);
+    margin-bottom: 20px;
+}
+
+/* Menu Buttons */
+.menu {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin: 30px 0;
+}
+
+.menu a {
+    display: inline-block;
+    padding: 12px 24px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.menu a:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+th {
+    background: var(--primary);
+    color: white;
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+}
+
+td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+tr:hover {
+    background: #f5f5f5;
+}
+
+/* Forms */
+input, select, button {
+    padding: 10px 15px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(67,97,238,0.2);
+}
+
+button, input[type="submit"] {
+    background: var(--success);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+button:hover, input[type="submit"]:hover {
+    background: #05b386;
+    transform: translateY(-1px);
+}
+
+/* Alert Messages */
+.error {
+    color: var(--danger);
+    background: #ffe6eb;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.success {
+    color: var(--success);
+    background: #e0faf2;
+    padding: 10px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.info {
+    color: var(--gray);
+    font-size: 14px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Video Container */
+.video-container {
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    margin: 20px 0;
+    text-align: center;
+}
+
+video {
+    width: 100%;
+    max-width: 640px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Result Box */
+.result-box {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: monospace;
+    height: 250px;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    margin: 15px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        text-align: center;
+    }
+    .menu {
+        justify-content: center;
+    }
+    .container {
+        margin: 10px;
+    }
+    .content {
+        padding: 20px;
+    }
+}
