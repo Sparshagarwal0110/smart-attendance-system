@@ -27,8 +27,5 @@ A web-based attendance system with face recognition, liveness detection, role-ba
 6. Access: `http://localhost:5000`
 7. Default admin: `admin` / `admin123`
 
-## Demo
-[Add screenshots or video link]
-
 ## Author
-Your Name – Final Year Project
+Sparsh Agarwal – Final Year Project
