@@ -15,11 +15,13 @@ A web-based attendance system for hospitals with face recognition, passive liven
 - **Interactive Charts** – Attendance trends and employee-wise percentages
 
 ## Tech Stack
+
 - Flask (Python)
 - SQLite
 - OpenCV
 - face_recognition
 - Chart.js
+- ReportLab (PDF generation)
 
 ## Installation
 1. Clone the repository
@@ -32,3 +34,6 @@ A web-based attendance system for hospitals with face recognition, passive liven
 
 ## Author
 Sparsh Agarwal – Final Year Project
+
+## License
+This project is for educational purposes.
