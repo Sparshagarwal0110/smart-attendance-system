@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Register Face (Live Capture)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📸</div>
+            <div class="logo-text">Live Face Registration</div>
+        </div>
+        <div class="content">
+            <h2>Register Employee Face using Webcam</h2>
+            {% if request.args.get('success') %}
+                <p class="success">Face registered successfully for {{ request.args.get('success') }}!</p>
+            {% endif %}
+            {% if request.args.get('error') %}
+                <p class="error">{{ request.args.get('error') }}</p>
+            {% endif %}
+            
+            <form id="registerForm">
+                <label>Select Employee:</label>
+                <select name="employee_id" id="employee_id" required>
+                    <option value="">-- Select Employee --</option>
+                    {% for e in employees %}
+                    <option value="{{ e.employee_id }}">{{ e.name }} ({{ e.employee_id }}) {% if e.has_face %}[Face already set]{% endif %}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <video id="video" width="640" height="480" autoplay></video>
+                <br>
+                <button type="button" id="captureBtn">Capture & Register Face</button>
+            </form>
+            <div id="result" class="result-box" style="margin-top: 15px;"></div>
+            <a href="{{ url_for('hod_dashboard') }}">Back to Dashboard</a>
+        </div>
+    </div>
+    <script>
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const resultDiv = document.getElementById('result');
+        const employeeSelect = document.getElementById('employee_id');
+
+        // Request camera access
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => { video.srcObject = stream; })
+            .catch(err => { resultDiv.innerHTML = 'Camera error: ' + err.message; });
+
+        captureBtn.addEventListener('click', () => {
+            const employeeId = employeeSelect.value;
+            if (!employeeId) {
+                resultDiv.innerHTML = 'Please select an employee first.';
+                return;
+            }
+            // Capture frame from video
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('face_image', blob, 'capture.jpg');
+                formData.append('employee_id', employeeId);
+                fetch('/hod/register_face/capture', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        resultDiv.innerHTML = '✅ Face registered successfully!';
+                        setTimeout(() => window.location.reload(), 1500);
+                    } else {
+                        resultDiv.innerHTML = '❌ ' + data.error;
+                    }
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = 'Error: ' + err.message;
+                });
+            }, 'image/jpeg');
+        });
+    </script>
+</body>
+</html>

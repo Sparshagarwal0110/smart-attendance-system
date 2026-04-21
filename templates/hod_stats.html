@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Department Statistics - HOD</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">📈</div>
+            <div class="logo-text">Department Analytics</div>
+        </div>
+        <div class="content">
+            <h2>Attendance Trends</h2>
+            <form id="filterForm">
+                <label>Department:</label>
+                <select id="deptSelect">
+                    <option value="">-- Select Department --</option>
+                    {% for d in departments %}
+                    <option value="{{ d.id }}">{{ d.dept_code }} - {{ d.dept_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="button" onclick="loadStats()">Load Statistics</button>
+            </form>
+            <canvas id="dailyChart" width="800" height="400"></canvas>
+            <br><a href="{{ url_for('hod_dashboard') }}">Back</a>
+        </div>
+    </div>
+    <script>
+        let hodChart;
+        function loadStats() {
+            const deptId = document.getElementById('deptSelect').value;
+            if(!deptId) { alert('Please select a department'); return; }
+            fetch('/hod/stats/data?department_id='+deptId).then(res=>res.json()).then(data=>{
+                if(hodChart) hodChart.destroy();
+                hodChart = new Chart(document.getElementById('dailyChart'), {
+                    type: 'line',
+                    data: { labels: data.daily.map(d=>d.date), datasets: [{ label: 'Daily Attendance Count', data: data.daily.map(d=>d.count), borderColor: 'green' }] }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

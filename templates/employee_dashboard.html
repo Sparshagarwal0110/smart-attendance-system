@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header"><div class="logo">👨‍⚕️</div><div class="logo-text">Employee Portal</div></div>
+        <div class="content">
+            <h1>Welcome, {{ username }}!</h1>
+            <canvas id="attendancePie" width="300" height="300"></canvas>
+            <h3>Your Attendance Records</h3>
+            <table id="attendanceTable">
+                <thead><tr><th>Date</th><th>Time In</th><th>Department</th><th>Status</th><th>Notes</th></tr></thead>
+                <tbody id="attendanceTableBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+            </table>
+            <div class="menu">
+                <a href="{{ url_for('employee_export_csv') }}">Export to CSV</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        fetch('/employee/attendance_data')
+            .then(res => res.json())
+            .then(records => {
+                const tbody = document.getElementById('attendanceTableBody');
+                tbody.innerHTML = '';
+                if (records.length===0) tbody.innerHTML = '<tr><td colspan="5">No records</td></tr>';
+                else {
+                    records.forEach(rec => {
+                        const row = tbody.insertRow();
+                        row.insertCell(0).innerText = rec.date;
+                        row.insertCell(1).innerText = rec.time_in;
+                        row.insertCell(2).innerText = rec.dept_code;
+                        row.insertCell(3).innerText = rec.status;
+                        row.insertCell(4).innerText = rec.shift_notes || '';
+                    });
+                }
+                const total = records.length;
+                const present = records.filter(r=>r.status==='present').length;
+                const ctx = document.getElementById('attendancePie').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: { labels: ['Present','Absent'], datasets: [{ data: [present, total-present], backgroundColor: ['#06d6a0','#ef476f'] }] }
+                });
+            });
+    </script>
+</body>
+</html>

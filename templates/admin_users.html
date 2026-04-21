@@ -1,82 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Manage Users & Students</title>
+    <title>Manage Users & Employees</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="logo">👥</div>
-            <div class="logo-text">Manage Users & Students</div>
+            <div class="logo-text">Manage Users & Employees</div>
         </div>
         <div class="content">
             <h2>All Users</h2>
-            <table border="1">
-                <tr><th>Username</th><th>Role</th><th>Linked Student ID</th><th>Action</th></tr>
-                {% for u in users %}
-                <tr>
-                    <td>{{ u.username }}</td>
-                    <td>{{ u.role_name }}</td>
-                    <td>{{ u.related_student_id or '-' }}</td>
-                    <td>
-                        {% if u.username != 'admin' %}
-                            <a href="{{ url_for('admin_remove_user', username=u.username) }}" onclick="return confirm('Remove user?')">Remove</a>
-                        {% else %}
-                            Default
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
+            <table>
+                <thead>
+                    <tr><th>Username</th><th>Role</th><th>Linked Employee ID</th><th>Action</th></tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>{{ u.username }}</td>
+                        <td>{{ u.role_name }}</td>
+                        <td>{{ u.related_employee_id or '-' }}</td>
+                        <td>
+                            {% if u.username != 'admin' %}
+                                <a href="{{ url_for('admin_remove_user', username=u.username) }}" onclick="return confirm('Remove user?')">Remove</a>
+                            {% else %}
+                                Default
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
 
             <h3>Add New User</h3>
             <form method="POST" action="{{ url_for('admin_add_user') }}">
                 <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
-                <select name="role" id="roleSelect" onchange="toggleStudentFields()">
+                <select name="role" id="roleSelect" onchange="toggleEmployeeFields()">
                     <option value="admin">Admin</option>
-                    <option value="teacher">Teacher</option>
-                    <option value="student">Student</option>
+                    <option value="hod">HOD (Head of Department)</option>
+                    <option value="employee">Employee</option>
                 </select>
-                
-                <div id="studentFields" style="display: none; margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
-                    <h4>Student Details (will create both student record and user account)</h4>
-                    <input type="text" name="student_id" placeholder="Student ID (e.g., CS101)">
+
+                <div id="employeeFields" style="display: none; margin-top: 15px; padding: 10px; background: #f0f0f0; border-radius: 8px;">
+                    <h4>Employee Details</h4>
+                    <input type="text" name="employee_id" placeholder="Employee ID (e.g., DOC101)">
                     <input type="text" name="name" placeholder="Full Name">
-                    <input type="text" name="department" placeholder="Department">
-                    <input type="number" name="enrollment_year" placeholder="Enrollment Year">
+                    <input type="text" name="designation" placeholder="Designation (Doctor/Nurse/Technician)">
+                    <input type="text" name="work_department" placeholder="Work Department (e.g., Cardiology)">
+                    <input type="number" name="joining_year" placeholder="Joining Year">
                 </div>
-                
+
                 <button type="submit">Add User</button>
             </form>
-            <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+            <a href="{{ url_for('admin_dashboard') }}">Back</a>
         </div>
     </div>
     <script>
-        function toggleStudentFields() {
+        function toggleEmployeeFields() {
             var role = document.getElementById('roleSelect').value;
-            var div = document.getElementById('studentFields');
-            div.style.display = (role === 'student') ? 'block' : 'none';
-            // Make student fields required only when visible
-            var studentId = document.querySelector('input[name="student_id"]');
-            var name = document.querySelector('input[name="name"]');
-            var dept = document.querySelector('input[name="department"]');
-            var year = document.querySelector('input[name="enrollment_year"]');
-            if (role === 'student') {
-                studentId.required = true;
-                name.required = true;
-                dept.required = true;
-                year.required = true;
-            } else {
-                studentId.required = false;
-                name.required = false;
-                dept.required = false;
-                year.required = false;
-            }
+            var div = document.getElementById('employeeFields');
+            div.style.display = (role === 'employee') ? 'block' : 'none';
+            var inputs = div.querySelectorAll('input');
+            inputs.forEach(inp => inp.required = (role === 'employee'));
         }
-        // Initial call
-        toggleStudentFields();
+        toggleEmployeeFields();
     </script>
 </body>
 </html>

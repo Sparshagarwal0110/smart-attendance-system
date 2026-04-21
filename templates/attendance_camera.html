@@ -1,30 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Face Recognition Attendance</title>
+    <title>Mark Attendance - Face Recognition</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
         <div class="header">
             <div class="logo">📷</div>
-            <div class="logo-text">Live Attendance</div>
+            <div class="logo-text">Face Recognition Attendance</div>
         </div>
         <div class="content">
-            <h2>Select Subject & Mark Attendance</h2>
-            <select id="subjectSelect">
-                <option value="">-- Select Subject --</option>
-                {% for subj in subjects %}
-                <option value="{{ subj.id }}">{{ subj.subject_code }} - {{ subj.subject_name }}</option>
+            <h2>Select Department & Mark Attendance</h2>
+            <select id="deptSelect">
+                <option value="">-- Select Department --</option>
+                {% for d in departments %}
+                <option value="{{ d.id }}">{{ d.dept_code }} - {{ d.dept_name }} ({{ d.shift_timing }})</option>
                 {% endfor %}
             </select>
             <video id="video" width="640" height="480" autoplay></video>
             <br>
-            <button id="captureBtn">Mark Attendance (5-frame burst)</button>
-            <div id="result" class="result-box">Ready – select subject and click button</div>
-            <a href="{{ url_for('teacher_dashboard') }}">Back</a>
+            <button id="captureBtn">Mark Attendance (Instant)</button>
+            <div id="result" class="result-box">Ready – select department and click button</div>
+            <a href="{{ url_for('hod_dashboard') }}">Back</a>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        const video = document.getElementById('video');
+        const captureBtn = document.getElementById('captureBtn');
+        const resultDiv = document.getElementById('result');
+        const deptSelect = document.getElementById('deptSelect');
+
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => video.srcObject = stream)
+            .catch(err => resultDiv.innerHTML = 'Camera error: ' + err.message);
+
+        function captureAndRecognize() {
+            const deptId = deptSelect.value;
+            if (!deptId) {
+                resultDiv.innerHTML = 'Please select a department first.';
+                return;
+            }
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('image', blob, 'frame.jpg');
+                formData.append('department_id', deptId);
+                fetch('/hod/attendance/recognize', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const ts = new Date().toLocaleTimeString();
+                    if (data.recognized) {
+                        resultDiv.innerHTML = `[${ts}] ✅ ${data.name} (${data.employee_id}) - ${data.department} - ${data.already_marked ? 'Already marked' : 'Marked!'}<br>` + resultDiv.innerHTML;
+                    } else {
+                        resultDiv.innerHTML = `[${ts}] ❌ ${data.reason || 'Face not recognized'}<br>` + resultDiv.innerHTML;
+                    }
+                    // keep last 10 lines
+                    let lines = resultDiv.innerHTML.split('<br>');
+                    if (lines.length > 10) resultDiv.innerHTML = lines.slice(0,10).join('<br>');
+                });
+            }, 'image/jpeg');
+        }
+        captureBtn.onclick = captureAndRecognize;
+    </script>
 </body>
 </html>

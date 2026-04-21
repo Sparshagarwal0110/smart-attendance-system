@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Departments & HODs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🏥</div>
+            <div class="logo-text">Departments & HODs</div>
+        </div>
+        <div class="content">
+            <h2>Departments / Wards</h2>
+            <table>
+                <thead>
+                    <tr><th>Code</th><th>Name</th><th>Shift Timing</th><th>HOD(s)</th></tr>
+                </thead>
+                <tbody>
+                    {% for d in departments %}
+                    <tr>
+                        <td>{{ d.dept_code }}</td>
+                        <td>{{ d.dept_name }}</td>
+                        <td>{{ d.shift_timing }}</td>
+                        <td>{{ d.hods | join(', ') if d.hods else '<em>Not assigned</em>'|safe }}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="4">No departments found</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <h3>Add Department</h3>
+            <form method="POST" action="{{ url_for('admin_add_department') }}">
+                <input type="text" name="dept_code" placeholder="Code (e.g., CARD)" required>
+                <input type="text" name="dept_name" placeholder="Name (e.g., Cardiology)" required>
+                <input type="text" name="shift_timing" placeholder="Shift Timing (e.g., Morning:9-17)" required>
+                <button type="submit">Add Department</button>
+            </form>
+
+            <h3>Assign HOD to Department</h3>
+            <form method="POST" action="{{ url_for('admin_assign_hod') }}">
+                <select name="hod_id" required>
+                    <option value="">-- Select HOD --</option>
+                    {% for h in hods %}
+                    <option value="{{ h.id }}">{{ h.username }}</option>
+                    {% endfor %}
+                </select>
+                <select name="department_id" required>
+                    <option value="">-- Select Department --</option>
+                    {% for d in departments %}
+                    <option value="{{ d.id }}">{{ d.dept_code }} - {{ d.dept_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Assign</button>
+            </form>
+            <a href="{{ url_for('admin_dashboard') }}">Back</a>
+        </div>
+    </div>
+</body>
+</html>

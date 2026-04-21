@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Manage Employees</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">👨‍⚕️</div>
+            <div class="logo-text">Employee Records</div>
+        </div>
+        <div class="content">
+            <h2>All Employees</h2>
+            {% if request.args.get('msg') %}
+                <p class="success">{{ request.args.get('msg') }}</p>
+            {% endif %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee ID</th><th>Name</th><th>Designation</th><th>Department</th><th>Joining Year</th><th>Face Registered?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in employees %}
+                    <tr>
+                        <td>{{ e.employee_id }}</td>
+                        <td>{{ e.name }}</td>
+                        <td>{{ e.designation }}</td>
+                        <td>{{ e.work_department }}</td>
+                        <td>{{ e.joining_year }}</td>
+                        <td>{% if e.has_face %}✅ Yes{% else %}❌ No{% endif %}</td>
+                    </tr>
+                    {% else %}
+                    <tr><td colspan="6">No employees found</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="{{ url_for('admin_dashboard') }}">Back</a>
+        </div>
+    </div>
+</body>
+</html>

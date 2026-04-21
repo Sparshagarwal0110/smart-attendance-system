@@ -9,16 +9,16 @@
     <div class="container">
         <div class="header">
             <div class="logo">📊</div>
-            <div class="logo-text">Statistics</div>
+            <div class="logo-text">Hospital Statistics</div>
         </div>
         <div class="content">
-            <h2>Attendance Statistics</h2>
+            <h2>Attendance Analytics</h2>
             <form id="filterForm">
-                <label>Subject:</label>
-                <select id="subjectSelect">
-                    <option value="">-- All Subjects --</option>
-                    {% for subj in subjects %}
-                    <option value="{{ subj.id }}">{{ subj.subject_code }} - {{ subj.subject_name }}</option>
+                <label>Department:</label>
+                <select id="deptSelect">
+                    <option value="">-- All Departments --</option>
+                    {% for d in departments %}
+                    <option value="{{ d.id }}">{{ d.dept_code }} - {{ d.dept_name }}</option>
                     {% endfor %}
                 </select>
                 <button type="button" onclick="loadStats()">Load Statistics</button>
@@ -27,66 +27,34 @@
                 <canvas id="dailyChart" width="800" height="400"></canvas>
             </div>
             <div style="margin-bottom: 20px;">
-                <canvas id="studentPieChart" width="800" height="400"></canvas>
+                <canvas id="employeePieChart" width="800" height="400"></canvas>
             </div>
-            <a href="{{ url_for('admin_dashboard') }}">Back to Dashboard</a>
+            <a href="{{ url_for('admin_dashboard') }}">Back</a>
         </div>
     </div>
     <script>
+        let dailyChart, pieChart;
         function loadStats() {
-            const subjectId = document.getElementById('subjectSelect').value;
-            let url = '/admin/stats/data';
-            if (subjectId) {
-                url += '?subject_id=' + subjectId;
-            }
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    // Daily line chart
-                    const dailyCtx = document.getElementById('dailyChart').getContext('2d');
-                    if (window.dailyChart) window.dailyChart.destroy();
-                    window.dailyChart = new Chart(dailyCtx, {
-                        type: 'line',
-                        data: {
-                            labels: data.daily.map(d => d.date),
-                            datasets: [{
-                                label: 'Number of Attendances',
-                                data: data.daily.map(d => d.count),
-                                borderColor: 'blue',
-                                fill: false
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            scales: {
-                                y: { beginAtZero: true, title: { display: true, text: 'Attendance Count' } },
-                                x: { title: { display: true, text: 'Date' } }
-                            }
-                        }
-                    });
-                    // Student pie chart
-                    const studentData = data.student_percentages.slice(0, 10);
-                    const pieCtx = document.getElementById('studentPieChart').getContext('2d');
-                    if (window.pieChart) window.pieChart.destroy();
-                    window.pieChart = new Chart(pieCtx, {
-                        type: 'pie',
-                        data: {
-                            labels: studentData.map(s => `${s.name} (${s.student_id})`),
-                            datasets: [{
-                                data: studentData.map(s => s.percentage),
-                                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40']
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            plugins: {
-                                tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw}%` } }
-                            }
-                        }
-                    });
+            const deptId = document.getElementById('deptSelect').value;
+            let url = '/admin/stats/data' + (deptId ? '?department_id='+deptId : '');
+            fetch(url).then(res=>res.json()).then(data=>{
+                if(dailyChart) dailyChart.destroy();
+                dailyChart = new Chart(document.getElementById('dailyChart'), {
+                    type: 'line',
+                    data: { labels: data.daily.map(d=>d.date), datasets: [{ label: 'Daily Attendances', data: data.daily.map(d=>d.count), borderColor: 'blue' }] }
                 });
+                if(pieChart) pieChart.destroy();
+                const empData = data.employee_percentages || [];
+                if(empData.length) {
+                    pieChart = new Chart(document.getElementById('employeePieChart'), {
+                        type: 'pie',
+                        data: { labels: empData.slice(0,10).map(e=>e.name), datasets: [{ data: empData.slice(0,10).map(e=>e.percentage), backgroundColor: ['#FF6384','#36A2EB','#FFCE56','#4BC0C0','#9966FF'] }] }
+                    });
+                } else {
+                    document.getElementById('employeePieChart').getContext('2d').clearRect(0,0,800,400);
+                }
+            });
         }
-        // Load on page load
         loadStats();
     </script>
 </body>
