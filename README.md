@@ -1,15 +1,18 @@
-# Smart Attendance System using Face Recognition
+# 🏥 Hospital Staff Attendance System using Face Recognition
 
-A web-based attendance system with face recognition, liveness detection, role-based access (Admin, Teacher, Student), multi-subject support, and analytics.
+A web-based attendance system for hospitals with face recognition, passive liveness detection, role-based access (Admin, HOD, Employee), department/shift management, and analytics.
 
 ## Features
-- Face recognition using `face_recognition` library
-- Passive liveness detection (no forced actions)
-- Role-based dashboards (Admin, Teacher, Student)
-- Multi-subject attendance tracking
-- PDF report export
-- Date range filtering
-- Dashboard summary cards
+
+- **Face Recognition** using `face_recognition` library
+- **Passive Liveness Detection** – no forced actions, detects natural movement
+- **Role-Based Dashboards** – Admin, HOD (Head of Department), Employee
+- **Department & Shift Management** – Multiple departments with shift timings
+- **Live Face Registration** – Capture employee faces directly from webcam
+- **PDF Report Export** – Download attendance reports by date range
+- **Date Range Filtering** – View attendance between any two dates
+- **Dashboard Summary Cards** – Real-time statistics (total employees, today's present, attendance %)
+- **Interactive Charts** – Attendance trends and employee-wise percentages
 
 ## Tech Stack
 - Flask (Python)
